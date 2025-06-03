@@ -21,6 +21,7 @@ class AttackTarget:
         self._tasks = []
 
     async def attack(self):
+        "Attack start"
         if self.targetUrl:
             self._stop_flag.clear()
             async with aiohttp.ClientSession() as session:

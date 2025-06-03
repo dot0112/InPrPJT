@@ -6,7 +6,7 @@ from datetime import datetime
 
 class ListenBroadcast:
     def __init__(self):
-        self.url = ""
+        self.url = "10.0.2.6"
         self.packetData = PacketData()
         self.encrypt = Encrypt()
         self.rawData = b""
@@ -22,6 +22,7 @@ class ListenBroadcast:
     def get(self):
         response = requests.get(self.url)
         if response.status_code == 200:
+            print("get packet success")
             self.rawData = response.content
             if self.callback:
                 self.callback()
@@ -59,3 +60,4 @@ class ListenBroadcast:
             decryptData[9],
         ]
         self.packetData.atkDuration = decryptData[10]
+        self.packetData.printPacket()

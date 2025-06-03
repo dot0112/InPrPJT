@@ -10,8 +10,11 @@ class BoradcastScheduler:
         self.manageBot = ManageBot()
         self.pngUtils = PngUtils()
         self.scheduler = BackgroundScheduler()
-        self.scheduler.add_job(func=self.broadcastPacket, trigger="cron", minute=0)
-        self.scheduler.add_job(func=self.stopBrodcastPacket, trigger="cron", minute=1)
+        # self.scheduler.add_job(func=self.broadcastPacket, trigger="cron", minute=0)
+        # self.scheduler.add_job(func=self.stopBrodcastPacket, trigger="cron", minute=1)
+        
+        self.scheduler.add_job(func=self.broadcastPacket, trigger="cron", minute="*/2") 
+        self.scheduler.add_job(func=self.stopBrodcastPacket, trigger="cron", minute="1/2")
         self.scheduler.start()
 
     def broadcastPacket(self):

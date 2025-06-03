@@ -17,6 +17,20 @@ class PacketData:
         self._encrptedToken = ""
         self._updateTime = None
 
+        
+    def printPacket(self):
+        print(
+            f"""[Packet Data]
+Flag: {self._flag}
+Ip Address: {".".join(map(str, self._ipAddr))}
+Port Num: {self._portNum}
+Attack Date: (+Y: {self._atkDate[0]}, D: {self._atkDate[1]}, H: {self._atkDate[2]})
+Attack Duration: {self._atkDuration}
+decryptKey: {"*" * 8 if self._decryptKey else None} / len: {len(self._decryptKey)}
+encryptedToken: {self.encryptedToken}
+"""
+        )
+
     def getBytes(self):
         MAX_PACKET_LEN = 46
 
