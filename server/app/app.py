@@ -4,10 +4,10 @@ from .tasks import BoradcastScheduler, Encrypt
 from .utils import StatusUtils
 
 
-def create_app():
+def create_app(test=False):
     app = Flask(__name__)
     StatusUtils().setStartTime()
     app.register_blueprint(main_blueprint)
-    BoradcastScheduler()
+    BoradcastScheduler(test)
     Encrypt()
     return app

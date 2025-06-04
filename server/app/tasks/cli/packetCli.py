@@ -38,7 +38,7 @@ class PacketCli:
                         self.pngUtils.writePNGData(self.packetData)
                     break
                 else:
-                    print(f"Enter Number Between 0 ~ 3")
+                    print(f"Enter Number Between 0 ~ 3 or x")
             except ValueError:
                 print("Enter Number Only")
 
@@ -59,8 +59,8 @@ class PacketCli:
                     else:
                         print("Invalid Pattern")
                 if step == 1:
-                    datePattern = r"^\d+:\d+:\d+$"
-                    date = input("[Terminal] Enter Attack Date(ex: 1:23:4): ")
+                    datePattern = r"^\d+:\d+:\d+:\d+:\d+$"
+                    date = input("[Terminal] Enter Attack Date(ex: Y:M:D:H:M): ")
                     if re.match(datePattern, date):
                         self.packetData.atkDate = list(
                             map(int, date.strip().split(":"))

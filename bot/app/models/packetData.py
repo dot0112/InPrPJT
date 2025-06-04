@@ -11,40 +11,49 @@ class PacketData:
             self._flag = 0
         self._ipAddr = [0, 0, 0, 0]
         self._portNum = 0
-        self._atkDate = [0, 0, 0]
+        self._atkDate = {"year": 0, "month": 0, "day": 0, "hour": 0, "min": 0}
         self._atkDuration = 0
+        self._encryptedToken = ""
         self._decryptKey = ""
-        self._encrptedToken = ""
         self._updateTime = None
 
-        
     def printPacket(self):
         print(
             f"""[Packet Data]
 Flag: {self._flag}
 Ip Address: {".".join(map(str, self._ipAddr))}
 Port Num: {self._portNum}
-Attack Date: (+Y: {self._atkDate[0]}, D: {self._atkDate[1]}, H: {self._atkDate[2]})
-Attack Duration: {self._atkDuration}
+Attack Date: ({self._atkDate["year"]}/{self._atkDate["month"]}/{self._atkDate["day"]} - {self.atkDate["hour"]}:{self.atkDate["min"]})
+Attack Duration: {self._atkDuration} Min
 decryptKey: {"*" * 8 if self._decryptKey else None} / len: {len(self._decryptKey)}
 encryptedToken: {self.encryptedToken}
 """
         )
 
+    def getBroadcastData(self):
+        data = None
+        if self.flag == 1:
+            data = self.flag.to_bytes(1, "big") + self.encryptedToken
+        else:
+            data = self.getBytes()
+        return data
+
     def getBytes(self):
-        MAX_PACKET_LEN = 46
+        MAX_PACKET_LEN = 45
 
         packet = []
         packet.extend(self.flag.to_bytes(1, "big"))
         if self.flag == 1:
             packet.extend(bytearray(self.ipAddr))
             packet.extend(self.portNum.to_bytes(2, "big"))
-            packet.extend(self.atkDate[0].to_bytes(1, "big"))
-            packet.extend(self.atkDate[1].to_bytes(2, "big"))
-            packet.extend(self.atkDate[2].to_bytes(1, "big"))
+            packet.extend(self.atkDate["year"].to_bytes(1, "big"))
+            packet.extend(self.atkDate["month"].to_bytes(1, "big"))
+            packet.extend(self.atkDate["day"].to_bytes(1, "big"))
+            packet.extend(self.atkDate["hour"].to_bytes(1, "big"))
+            packet.extend(self.atkDate["min"].to_bytes(1, "big"))
             packet.extend(self.atkDuration.to_bytes(1, "big"))
         if self.flag == 2:
-            packet.extend(self.decryptKey.encode("utf-8"))
+            packet.extend(self.decryptKey)
 
         if len(packet) < MAX_PACKET_LEN:
             packet.extend([0] * (MAX_PACKET_LEN - len(packet)))
@@ -86,13 +95,17 @@ encryptedToken: {self.encryptedToken}
 
     @atkDate.setter
     def atkDate(self, value):
-        if (
-            len(value) == 3
-            and 0 <= value[0]
-            and 0 <= value[1] <= 364
-            and 0 <= value[2] <= 23
-        ):
+        if isinstance(value, (list, tuple)) and len(value) == 5:
+            keys = ["year", "month", "day", "hour", "min"]
+            self._atkDate = dict(zip(keys, value))
+
+        elif isinstance(value, dict):
+            required_keys = {"year", "month", "day", "hour", "min"}
+            if not required_keys.issubset(value.keys()):
+                raise ValueError(f"atkDate must contain keys: {required_keys}")
             self._atkDate = value
+        else:
+            raise ValueError("atkDate must be a dict or a list/tuple of length 5")
 
     @property
     def atkDuration(self):
@@ -112,17 +125,17 @@ encryptedToken: {self.encryptedToken}
         self._decryptKey = value
 
     @property
-    def updateTime(self):
-        return self._updateTime
-
-    @updateTime.setter
-    def updateTime(self, value):
-        self._updateTime = value
-
-    @property
     def encryptedToken(self):
         return self._encryptedToken
 
     @encryptedToken.setter
     def encryptedToken(self, value):
         self._encryptedToken = value
+
+    @property
+    def updateTime(self):
+        return self._updateTime
+
+    @updateTime.setter
+    def updateTime(self, value):
+        self._updateTime = value
