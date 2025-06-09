@@ -13,4 +13,4 @@ app = create_app(test)
 
 if __name__ == "__main__":
     threading.Thread(target=Cli().run, daemon=True).start()
-    app.run(debug=False)
+    app.run(host="127.0.0.1", port=8000, debug=False)
