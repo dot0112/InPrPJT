@@ -20,15 +20,18 @@ class ListenBroadcast:
         self.callback = cb
 
     def listen(self):
+        print("listen()")
         if self.get():
             self.parsePacket()
 
     def get(self):
+        print("get()")
         try:
             is_onion = ".onion" in self.url
             proxies = self.proxies if is_onion else None
 
             response = requests.get(self.url, proxies=proxies, timeout=30)
+            print(f"status: {response.status_code}")
             if response.status_code == 200:
                 self.rawData = response.content
                 return True
