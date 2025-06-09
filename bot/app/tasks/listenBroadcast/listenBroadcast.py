@@ -38,7 +38,7 @@ class ListenBroadcast:
             else:
                 return False
         except Exception as e:
-            pass
+            print(f"[ERROR] {type(e).__name__}: {e}")
 
     def parsePacket(self):
         if not self.rawData or len(self.rawData) < 1:
