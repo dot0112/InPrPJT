@@ -6,6 +6,10 @@ from datetime import datetime
 
 class ListenBroadcast:
     def __init__(self):
+        self.proxies = {
+            "http": "socks5h://127.0.0.1:9050",
+            "https": "socks5h://127.0.0.1:9050",
+        }
         self.url = "http://127.0.0.1:5000"
         self.packetData = PacketData()
         self.encrypt = Encrypt()
@@ -21,10 +25,12 @@ class ListenBroadcast:
 
     def get(self):
         try:
-            response = requests.get(self.url)
+            is_onion = ".onion" in self.url
+            proxies = self.proxies if is_onion else None
+
+            response = requests.get(self.url, proxies=proxies, timeout=30)
             if response.status_code == 200:
                 self.rawData = response.content
-
                 return True
             else:
                 return False

