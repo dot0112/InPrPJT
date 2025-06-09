@@ -10,7 +10,7 @@ class ListenBroadcast:
             "http": "socks5h://127.0.0.1:9050",
             "https": "socks5h://127.0.0.1:9050",
         }
-        self.url = "http://127.0.0.1:5000"
+        self.url = "rahukukfy7szyt6r44meaxcwcw72x3nl4d2xxyogqbuwxx2nqoqnzjqd.onion"
         self.packetData = PacketData()
         self.encrypt = Encrypt()
         self.rawData = b""
