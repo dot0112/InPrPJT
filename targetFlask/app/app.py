@@ -1,8 +1,12 @@
 from flask import Flask
-from .routes import main as mainBlueprint
+from .routes import sendPath as pathBlueprint
+from .routes import sendHTML as htmlBlueprint
 
 
-def createApp():
+def createApp(sendHTML=False):
     app = Flask(__name__)
-    app.register_blueprint(mainBlueprint)
+    if not sendHTML:
+        app.register_blueprint(pathBlueprint)
+    else:
+        app.register_blueprint(htmlBlueprint)
     return app
