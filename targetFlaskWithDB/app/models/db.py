@@ -9,13 +9,13 @@ class Db:
             host="localhost",
             user="root",
             password="1234",
-            database="TEST",
+            database="test",
         )
 
     def select(self):
         conn = self._pool.get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM TEST")
+        cursor.execute("SELECT * FROM test")
         rows = cursor.fetchall()
         cursor.close()
         conn.close()
