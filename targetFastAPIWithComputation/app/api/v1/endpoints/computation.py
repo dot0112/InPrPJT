@@ -9,7 +9,7 @@ router = APIRouter(tags=["computation"])
     "/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 )
 def catch_all(
-    numHashes: int = Query(100000, description="Number of hash computations"),
+    numHashes: int = Query(1000, description="Number of hash computations"),
     dataSize: int = Query(1024, description="Size of dummy data in bytes"),
 ):
 
