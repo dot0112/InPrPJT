@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template
 from app.middleware import r
 
 sendPath = Blueprint("path", __name__)
@@ -29,14 +29,16 @@ def counts(path):
 
 @sendPath.route("/stats", defaults={"path": ""})
 def stats(path):
-    count = r.get("request_count_total")
-    return str(count)
+    result = {}
+    result["total_count"] = int(r.get("request_count_total"))
+    return result
 
 
 @sendHTML.route("/stats", defaults={"path": ""})
 def stats(path):
-    count = r.get("request_count_total")
-    return str(count)
+    result = {}
+    result["total_count"] = int(r.get("request_count_total"))
+    return result
 
 
 @sendPath.route("/", defaults={"path": ""})

@@ -1,10 +1,7 @@
-from app import createApp, RequestCounterMiddleware
+from app import createApp
 from app.models import Db
 
 app = createApp()
-middleware = RequestCounterMiddleware(app.wsgi_app)
-app.wsgi_app = middleware
-app.middleware = middleware
 
 if __name__ == "__main__":
     Db()
