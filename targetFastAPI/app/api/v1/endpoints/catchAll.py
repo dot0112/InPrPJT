@@ -4,9 +4,8 @@ from fastapi.responses import JSONResponse
 router = APIRouter(tags=["catchAll"])
 
 
-@app.api_route(
-    "/{full_path:path}",
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH", "TRACE"],
+@router.api_route(
+    "/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 )
 async def catch_all(full_path: str, request: Request):
     return JSONResponse(content={"status": "ok"}, status_code=200)
