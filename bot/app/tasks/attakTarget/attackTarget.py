@@ -47,6 +47,7 @@ class AttackTarget:
                 try:
                     results = await asyncio.gather(*self._tasks)
                     self.attackCount = sum(results)
+                    print(self.attackCount)
                 except asyncio.CancelledError:
                     pass
 
@@ -60,9 +61,6 @@ class AttackTarget:
 
     def stop(self):
         self._stop_flag.set()
-        for task in self._tasks:
-            if not task.done():
-                task.cancel()
 
     @property
     def target(self):
